@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="css/jquery.fullPage.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="css/bootstrap.css">-->
+    <style>
+        html,body,p,div,h1,h2,h3,h4,h5,h6 {
+            margin: 0;padding: 0;
+        }
+        li{
+            list-style: none;
+        }
+        a{
+            text-decoration: none;
+        }
+        img{
+            border: none;
+        }
+        .section{
+            /*section 如果没有设置字体会导致在浏览器尺寸变化的时候section内字体变化*/
+            font: 14px/1.5 "Helvetica Neue",Helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","WenQuanYi Micro Hei",sans-serif;
+        }
+        .section .container{
+            position: relative;
+        }
+        .section1,.section2{
+            background: url(images/section1.jpg);
+        }
+        .section3{
+            background: url(images/section2.jpg);
+        }
+        /* 设置标题 */
+        .section3 h3{
+            margin-bottom: 16px;
+            text-indent: 0.5em;
+            font-size: 24px;
+            line-height: 42px;
+            color: #333;
+        }
+        .section1 .panel-heading {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        @media all and (max-width:375px){
+            .section1 .panel-heading {
+                font-weight: normal;
+                font-size: 16px;
+            }
+        }
+
+        #fullPage-nav li {
+            margin: 10px 0 0;
+        }        
+        #fullPage-nav li a {
+            float: right;
+            width: 21px;
+            height: 21px;
+            color: #8F9DA4;
+            text-align: right;
+            background: url(images/dot.png) 5px 5px no-repeat;
+        }     
+        #fullPage-nav li span{
+            /*不显示默认的黑点*/
+            display: none;
+        }
+        #fullPage-nav li .active {
+            background-position: 0 bottom;
+        }
+        /*右侧提示*/
+        .fullPage-tooltip {
+            width: 4em;
+            color: #999;
+        }
+        .media-list{
+            color: #ffffff;
+        }
+        .media-left p{
+            width: 64px;
+            background: #EEEEEE;
+            text-align: center;
+        } 
+        .media-month {
+            line-height: 28px;
+            font-size:20px; 
+            color:#999;
+        }
+        .media-day{
+            line-height: 36px;
+            font-size: 28px;
+            vertical-align: top;
+            font-weight: bold;
+            color:#333;
+        }
+        .media-heading a{
+            font-weight: bold;
+        }
+        #main{
+            height:400px;
+        }               
+    </style>
+    <script src="http://libs.baidu.com/jquery/1.8.3/jquery.min.js"></script>
+    <!--fullPage依赖jquery.ui-->
+    <script src="//cdn.bootcss.com/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <!--<script src="js/jquery-ui-1.10.3.min.js"></script>-->
+    <script src="js/jquery.fullPage.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--<script src="js/bootstrap.js"></script>-->
+    <script src="//cdn.bootcss.com/echarts/3.4.0/echarts.common.min.js"></script>
+    <!--<script src="js/echarts.common.min.js"></script>-->    
+    
+    <script>
+        $(function(){
+            $.fn.fullpage({
+                verticalCentered: false,
+                anchors: ['page1', 'page2', 'page3'],
+                navigation: true,
+                navigationTooltips: ['最新成交', '历史数据', '最近开盘']    
+            });
+
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main'));
+            
+            var option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    //隐藏toolbox
+                    show:false,
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                legend: {
+                    data:['住宅供应量(万方)','住宅成交量(万方)','住宅均价(元)']
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: <%- JSON.stringify(histories.dataPeriod) %>,
+                        //旋转一定角度，避免遮挡
+                        'axisLabel':{'rotate':-30}
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '面积',
+                        min: 0,
+                        <% var ary=histories.sqspzzysmj.concat(histories.sqspzzbamj);
+                            var maxY=Math.ceil( Math.max.apply(null,ary))* 1.1;
+                            var intervalY=maxY/10;
+                         %>
+                        max: <%=maxY%>,
+                        interval: <%=intervalY%>,
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '价格',
+                        min: 5000,
+                        max: 12000,
+                        interval: 1000,
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name:'住宅供应量(万方)',
+                        type:'bar',
+                        data:<%- JSON.stringify(histories.sqspzzysmj) %>
+                    },
+                    {
+                        name:'住宅成交量(万方)',
+                        type:'bar',
+                        data: <%- JSON.stringify(histories.sqspzzbamj) %>
+                    },
+                    {
+                        name:'住宅均价(元)',
+                        type:'line',
+                        yAxisIndex: 1,
+                        data:<%- JSON.stringify(histories.sqspzzprice) %>
+                    }
+                ]
+            };
+        
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+            window.onload=window.onresize=function(){
+                var winH=$(window).height();
+                //动态调整chart的高度
+                $main=$('#main');
+                $main.height(winH*0.8)
+                myChart.resize();
+                $('.section .container').each(function(i,e){
+                    var $e=$(e);
+                    var height=$e.height();
+                    $e.css('top',(winH-height)/2);
+                })
+            }    
+        });
+        
+    </script> 
+</head>
+<body>
+    <div class="section section1">
+        <div class="container center-block">
+            <div class="row">
+                <div class="panel panel-info">
+                    <div class="panel-heading">成交信息(日期:<%=cjInfoDate%> 套数:<%=cjRoomnums%>)
+                        <span class="text-right pull-right"><%=createTime%></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="visible-xs">
+                            <!-- Table -->
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>项目名称</th>
+                                    <th>成交套数</th>
+                                    <th>成交面积</th>
+                                    <th>可售面积</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% for(var i=0;i<zxcjs.length;i++){
+                                    var item=zxcjs[i]; 
+                                    if(i<8) {%>
+                                <tr>
+                                    <th scope="row"><%= item.PRJNAME%></th>
+                                    <td><%= item.YSSALEROOMNUMS%></td>
+                                    <td><%= item.YSSALEROOMBAREA%></td>
+                                    <td><%= item.YSCANSALEROOMBAREA%></td>
+                                </tr>
+                                <% }
+                                } %>
+                                </tbody>
+                            </table>                
+                        </div>            
+                        <div class="hidden-xs">
+                            <!-- Table -->
+                            <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>项目名称</th>
+                                        <th>施工编号</th>
+                                        <th>预售套数</th>
+                                        <th>成交套数</th>
+                                        <th>成交面积</th>
+                                        <th>可售面积</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% for(var i=0;i<zxcjs.length;i++){
+                                        var item=zxcjs[i]; 
+                                        if(i<12) { %>
+                                    <tr>
+                                        <th scope="row"><%= item.PRJNAME%></th>
+                                        <td><%= item.CONSNUM%></td>
+                                        <td><%= item.YSROOMNUMS%></td>
+                                        <td><%= item.YSSALEROOMNUMS%></td>
+                                        <td><%= item.YSSALEROOMBAREA%></td>
+                                        <td><%= item.YSCANSALEROOMBAREA%></td>
+                                    </tr>
+                                    <% }
+                                    } %>
+                                    </tbody>
+                                </table>
+                        </div>                 
+                    </div> 
+                </div>
+            </div>                  
+        </div>
+    </div>
+    <div class="section section2">
+        <div class="container center-block">
+            <div id="main" style="width: 100%;"></div>
+            <p>*市区数据</p>
+        </div>
+    </div>
+    <div class="section section3">
+        <div class="container center-block">
+            <div class="row hidden-xs">
+                <div class="col-sm-3">
+                    <h3>最新开盘</h3>
+                    <div class="media-list">
+                        <% for(var i=0;i< zxkps.length;i++){
+                            if(i>4){
+                                break;
+                            }
+                            var item=zxkps[i];
+                            var date=item['date'];
+                            var content=item['content'];
+                            var mon=date.split('/')[0]+'月';
+                            var day=date.split('/')[1].replace('日','');
+                            %>
+                        <div class="media">
+                            <div class="media-left">
+                                <p class="media-month"><%=mon%></p>
+                                <p class="media-day"><%=day%></p>
+                            </div>
+                            <div class="media-body">
+                                <% for(var j=0;j< content.length;j++){ 
+                                    var temp=content[j]; 
+                                    var name=temp['name'];
+                                    var price=temp['price'];
+                                    var href=temp['href'];
+                                    %>
+                                <h4 class="media-heading"><a href="<%=href%>" target="_blank"><%=name%></a></h4>
+                                <p> <%=price%></p>
+                                <%}%>                        
+                            </div>                     
+                        </div>
+                        <%}%>                                                           
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <h3>土拍信息</h3>
+                    <% for(var i=0;i< tupais.length;i++){
+                        if(i>=3){
+                            break;
+                        }
+                        var item=tupais[i];
+                        var title=item['title'];
+                        var price=item['price'];
+                        var area=item['area'];
+                        var link='http://112.21.191.81:81'+item['link'];
+                        var num=item['num'];
+                    %>                    
+                        <div class="col-sm-4">
+                            <div class="thumbnail">
+                            <img data-src="" alt="" style="height: 200px; width: 100%; display: block;" src="images/blank.jpg" data-holder-rendered="true">
+                            <div class="caption">
+                                <h3><%=title%></h3>
+                                <h4><%=num%></h4>
+                                <p><%=area%></p>
+                                <p><%=price%></p>
+                                <p><a href="<%=link%>" target="_blank" class="btn btn-primary" role="button">详细</a></p>
+                            </div>
+                            </div>
+                        </div>
+                    <%}%> 
+                </div>
+            </div>
+
+            <div class="row visible-xs">
+                <ul class="list-group">
+                    <a href="#" class="list-group-item active">
+                        最新开盘
+                    </a>                
+                    <% 
+                    var count=0;
+                    for(var i=0;i< zxkps.length;i++){
+                        if(count>=5){
+                            break;
+                        }
+                        var item=zxkps[i];
+                        var date=item['date'];
+                        var content=item['content']; 
+                        for(var j=0;j< content.length;j++){
+                                count++; 
+                                var temp=content[j]; 
+                                var name=temp['name'];
+                                var price=temp['price'];
+                                var href=temp['href'];
+                        %>           
+                    <li class="list-group-item">
+                        <span class="badge"><%=price%></span><%=date%>-<%=name%>
+                    </li>
+                    <%}
+                    }%>
+                </ul>
+                <ul class="list-group">
+                <a href="#" class="list-group-item active">
+                    土拍信息
+                </a>                 
+                <% for(var i=0;i< tupais.length;i++){
+                    if(i>=3){
+                        break;
+                    }
+                    var item=tupais[i];
+                    var title=item['title'];
+                    var price=item['price'];
+                    var area=item['area'];
+                    var num=item['num'];
+                    var link='http://112.21.191.81:81'+item['link'];
+                %>                    
+                    <li class="list-group-item">
+                        <span class="badge"><%=num%></span><%=title%>-<%=area%>
+                    </li>
+                <%}%>                                                                                                                   
+                </ul>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

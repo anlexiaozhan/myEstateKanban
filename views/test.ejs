@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/jquery.fullPage.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <style>
+        html,body,p,div,h1,h2,h3,h4,h5,h6 {
+            margin: 0;padding: 0;
+        }
+        li{
+            list-style: none;
+        }
+        a{
+            text-decoration: none;
+        }
+        img{
+            border: none;
+        }
+        .section{
+            /*section 如果没有设置字体会导致在浏览器尺寸变化的时候section内字体变化*/
+            font: 14px/1.5 "Helvetica Neue",Helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","WenQuanYi Micro Hei",sans-serif;
+        }
+        .section .container{
+            position: relative;
+            
+        }
+        .section1{
+            background: url(images/section1.jpg);
+        }
+        .section2{
+            background: url(images/section2.jpg);
+        }
+        .section3{
+            background: url(images/section3.jpg);
+        }
+        #fullPage-nav li {
+            margin: 10px 0 0;
+        }        
+        #fullPage-nav li a {
+            float: right;
+            width: 21px;
+            height: 21px;
+            color: #8F9DA4;
+            text-align: right;
+            background: url(images/dot.png) 5px 5px no-repeat;
+        }     
+        #fullPage-nav li span{
+            /*不显示默认的黑点*/
+            display: none;
+        }
+        #fullPage-nav li .active {
+            background-position: 0 bottom;
+        }
+        .vertical-center{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .media-list{
+            color: #ffffff;
+        }
+        .media-left p{
+            width: 64px;
+            background: #EEEEEE;
+            text-align: center;
+        } 
+        .media-month {
+            line-height: 28px;
+            font-size:20px; 
+            color:#999;
+        }
+        .media-day{
+            line-height: 36px;
+            font-size: 28px;
+            vertical-align: top;
+            font-weight: bold;
+            color:#333;
+        }
+        #main{
+                min-height:400px;
+                max-height:800px;
+        }
+        /*<375*/
+         @media screen and (max-width: 375px){
+             #main{
+                 min-height: 320px;max-height:600px;
+             }
+        }       
+        /*>=375*/
+        @media screen and (min-width: 375px) and (max-width: 767px){
+            #main{
+                 min-height:375px;max-height:600px;
+             }
+        } 
+        /*>=768*/
+        @media screen and (min-width: 768px){
+
+        }                  
+    </style>
+    <script src="http://libs.baidu.com/jquery/1.8.3/jquery.min.js"></script>
+    <!--fullPage依赖jquery.ui-->
+    <script src="js/jquery-ui-1.10.3.min.js"></script>
+    <script src="js/jquery.fullPage.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/echarts.js"></script>    
+    
+    <script>
+        $(function(){
+            $.fn.fullpage({
+                verticalCentered: false,
+                anchors: ['page1', 'page2', 'page3'],
+                navigation: true,
+                navigationTooltips: ['首页', '视觉', '交互']    
+            });
+
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main'));
+            myChart.title = '折柱混合';
+
+            var option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                legend: {
+                    data:['蒸发量','降水量','平均温度']
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '水量',
+                        min: 0,
+                        max: 250,
+                        interval: 50,
+                        axisLabel: {
+                            formatter: '{value} ml'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '温度',
+                        min: 0,
+                        max: 25,
+                        interval: 5,
+                        axisLabel: {
+                            formatter: '{value} °C'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name:'蒸发量',
+                        type:'bar',
+                        data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    },
+                    {
+                        name:'降水量',
+                        type:'bar',
+                        data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+                    },
+                    {
+                        name:'平均温度',
+                        type:'line',
+                        yAxisIndex: 1,
+                        data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                    }
+                ]
+            };
+        
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+            window.onload=window.onresize=function(){
+                myChart.resize();
+                var winH=$(window).height();
+                $('.section .container').each(function(i,e){
+                    var $e=$(e);
+                    var height=$e.height();
+                    $e.css('top',(winH-height)/2);
+                    console.log(height)
+                })
+            }    
+        });
+        
+    </script> 
+</head>
+<body>
+    <div class="section section1">
+        <div class="container center-block">
+            <div class="row">
+                <div class="panel panel-info">
+                    <div class="panel-heading">最新成交信息</div>
+                    <div class="panel-body">
+                        <div>
+                            <!-- Table -->
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>项目名称</th>
+                                    <th>成交套数</th>
+                                    <th>成交面积</th>
+                                    <th>可售面积</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>                                
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>                                
+                                </tr>                                
+                                </tbody>
+                            </table>                
+                        </div>             
+                    </div> 
+                </div>
+            </div>                  
+        </div>
+    </div>
+    <div class="section section2">
+        <div class="container center-block">
+            <div id="main" style="width: 100%;"></div>
+        </div>
+    </div>
+    <div class="section section3">
+        <div class="container center-block">
+            <div class="row hidden-xs">
+                <div class="media-list col-sm-3">
+                    <div class="media">
+                        <div class="media-left">
+                            <p class="media-month">2月</p>
+                            <p class="media-day">15</p>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">Top aligned media</h4>
+                            <p> 价格价格价格价格</p>
+                            <h4 class="media-heading">Top aligned media</h4>
+                            <p> 价格价格价格价格</p>                            
+                        </div>                     
+                    </div>
+                    <div class="media">
+                        <div class="media-left">
+                            <p class="media-month">2月</p>
+                            <p class="media-day">15</p>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">Top aligned media</h4>
+                            <p> 价格价格价格价格</p>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-left">
+                            <p class="media-month">2月</p>
+                            <p class="media-day">15</p>
+                        </div>
+                        <div class="media-body" style="color: white;">
+                            <h4 class="media-heading">Top aligned media</h4>
+                            <p> 价格价格价格价格</p>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-left">
+                            <p class="media-month">2月</p>
+                            <p class="media-day">15</p>
+                        </div>
+                        <div class="media-body" style="color: white;">
+                            <h4 class="media-heading">Top aligned media</h4>
+                            <p> 价格价格价格价格</p>
+                        </div>
+                    </div>                                                            
+                </div>
+                <div class="col-sm-9">
+                    <div class="col-sm-4">
+                        <div class="thumbnail">
+                        <img data-src="" alt="100%x200" style="height: 200px; width: 100%; display: block;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjQyIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI0MiAyMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MjAwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTVhMGQ3ZDdmNTIgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxMnB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWEwZDdkN2Y1MiI+PHJlY3Qgd2lkdGg9IjI0MiIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSI4OS44NTAwMDAzODE0Njk3MyIgeT0iMTA1LjciPjI0MngyMDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true">
+                        <div class="caption">
+                            <h3>Thumbnail label</h3>
+                            <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="thumbnail">
+                        <img data-src="" alt="100%x200" style="height: 200px; width: 100%; display: block;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjQyIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI0MiAyMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MjAwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTVhMGQ3ZDk5MWEgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxMnB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWEwZDdkOTkxYSI+PHJlY3Qgd2lkdGg9IjI0MiIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSI4OS44NTAwMDAzODE0Njk3MyIgeT0iMTA1LjciPjI0MngyMDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true">
+                        <div class="caption">
+                            <h3>Thumbnail label</h3>
+                            <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="thumbnail">
+                        <img data-src="" alt="100%x200" style="height: 200px; width: 100%; display: block;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjQyIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI0MiAyMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MjAwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTVhMGQ3ZDk5MWEgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxMnB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWEwZDdkOTkxYSI+PHJlY3Qgd2lkdGg9IjI0MiIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSI4OS44NTAwMDAzODE0Njk3MyIgeT0iMTA1LjciPjI0MngyMDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true">
+                        <div class="caption">
+                            <h3>Thumbnail label</h3>
+                            <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                            <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                        </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+
+            <div class="row visible-xs">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                </ul>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>
+                    <li class="list-group-item">
+                        <span class="badge">14</span>XXXXXXXX
+                    </li>                                                                                                    
+                </ul>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
